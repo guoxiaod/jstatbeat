@@ -1,0 +1,11 @@
+################### Jstatbeat Configuration Example #########################
+
+############################# Jstatbeat ######################################
+
+jstatbeat:
+  # Defines how often beat tries to identify pid for named java process
+  period: 10s
+  # Defines the name of the java process to connect jstat to 
+  name: "JConsole"
+  # Defines frequency to pass to jstat monitor
+  freq: "1000"

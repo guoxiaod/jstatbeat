@@ -1,0 +1,5 @@
+= Jstatbeat Docs
+
+Welcome to the Jstatbeat documentation.
+
+

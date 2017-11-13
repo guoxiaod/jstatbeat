@@ -1,0 +1,55 @@
+- key: jstatbeat
+  title: JSTATbeat
+  description: >
+    Numbers from JStat
+  fields:
+    - name: jstat
+      type: group
+      description: >
+        Holds jstat top level values and metricsets
+      fields:
+        - name: type
+          type: text
+          description: >
+            The Java Version of the connected process.
+        - name: pid
+          type: text
+        - name: name
+          type: text
+        - name: gc
+          type: group
+          desctipion: >
+            The metricset of values from jstat -GC.
+          fields:
+             - name: CCSC
+               type: float
+             - name: CCSU
+               type: float
+             - name: EC
+               type: float
+             - name: EU
+               type: float
+             - name: FGC
+               type: float
+             - name: GCT
+               type: float
+             - name: MC
+               type: float
+             - name: MU
+               type: float
+             - name: OC
+               type: float
+             - name: S0C
+               type: float
+             - name: S0U
+               type: float
+             - name: S1C
+               type: float
+             - name: S1U
+               type: float
+             - name: Timestamp
+               type: float
+             - name: YGC
+               type: float
+             - name: YGCT
+               type: float
