@@ -1,0 +1,16 @@
+[Unit]
+Description=jstatbeat
+Documentation=https://github.com/guoxiaod/jstatbeat
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/jstatbeat.pid
+ExecStartPre=/usr/sbin/jstatbeat -c /etc/jstatbeat/jstatbeat.yml test config
+ExecStart=/usr/sbin/jstatbeat -c /etc/jstatbeat/jstatbeat.yml
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

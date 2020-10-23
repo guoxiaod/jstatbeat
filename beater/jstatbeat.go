@@ -1,7 +1,6 @@
 package beater
 
 import (
-	"bufio"
 	"fmt"
 	"os/exec"
 	"regexp"
@@ -9,20 +8,22 @@ import (
 	"strings"
 	"time"
 
-	"github.com/elastic/beats/libbeat/beat"
-	"github.com/elastic/beats/libbeat/common"
-	"github.com/elastic/beats/libbeat/logp"
-	"github.com/elastic/beats/libbeat/publisher"
+	"github.com/elastic/beats/v7/libbeat/beat"
+	"github.com/elastic/beats/v7/libbeat/common"
+	"github.com/elastic/beats/v7/libbeat/logp"
+	// "github.com/elastic/beats/libbeat/publisher"
 
-	"github.com/sw/jstatbeat/config"
+	"github.com/guoxiaod/jstatbeat/config"
 )
 
 var blanks = regexp.MustCompile(`\s+`)
 
 type Jstatbeat struct {
-	done   chan struct{}
-	config config.Config
-	client publisher.Client
+	done      chan struct{}
+	config    config.Config
+	client    beat.Client
+	names     map[string]bool
+	isExclude bool
 }
 
 // Creates beater
@@ -31,18 +32,52 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	if err := cfg.Unpack(&config); err != nil {
 		return nil, fmt.Errorf("Error reading config file: %v", err)
 	}
+	names := make(map[string]bool)
+	for _, v := range config.Names {
+		names[v] = true
+	}
+	for _, v := range config.ExcludeNames {
+		names[v] = false
+	}
 
 	bt := &Jstatbeat{
-		done:   make(chan struct{}),
-		config: config,
+		done:      make(chan struct{}),
+		config:    config,
+		names:     names,
+		isExclude: len(config.ExcludeNames) > 0,
 	}
 	return bt, nil
+}
+
+// publish sends events into the beats pipeline
+func (bt *Jstatbeat) publishAll(content []common.MapStr, b *beat.Beat) error {
+	logp.Debug("beat", "publishing %v event(s)", len(content))
+	for _, evt := range content {
+		// event CreationTime needs "Z" appended (unlike blob contentCreated)
+		ts, err := time.Parse(time.RFC3339, evt["CreationTime"].(string)+"Z")
+		if err != nil {
+			logp.Error(err)
+			return err
+		}
+		fs := common.MapStr{}
+		for k, v := range evt {
+			fs[k] = v
+		}
+		beatEvent := beat.Event{Timestamp: ts, Fields: fs}
+		bt.client.Publish(beatEvent)
+	}
+	return nil
 }
 
 func (bt *Jstatbeat) Run(b *beat.Beat) error {
 	logp.Info("jstatbeat is running! Hit CTRL-C to stop it.")
 
-	bt.client = b.Publisher.Connect()
+	var err error
+	bt.client, err = b.Publisher.Connect()
+	if err != nil {
+		logp.Err("Error while connect to ES: %v", err)
+		return err
+	}
 	ticker := time.NewTicker(bt.config.Period)
 
 	for {
@@ -52,93 +87,101 @@ func (bt *Jstatbeat) Run(b *beat.Beat) error {
 		case <-ticker.C:
 		}
 
-		logp.Info("Tick - Scanning for Named Java Process")
-		pid_id := ""
+		logp.Debug("beat", "Tick - Scanning for Named Java Process")
 
-		cmd := exec.Command("jps")
-		stdout, err := cmd.StdoutPipe()
+		output, err := exec.Command("jps").Output()
 		if err != nil {
-			logp.Err("Error get stdout pipe: %v", err)
-			return err
+			logp.Err("Error get while run jps: %v", err)
+			continue
 		}
-
-		cmd.Start()
-		scanner := bufio.NewScanner(stdout)
-		for scanner.Scan() {
-			line := scanner.Text()
-			items := strings.Split(line, " ")
-
-			if len(items) == 2 && items[1] == bt.config.Name {
-				pid_id = items[0]
-				break
-			}
-		}
-		cmd.Wait()
-		if pid_id == "" {
-			logp.Info("Didn't find named Java Process - Check again on next Tick")
+		if len(output) < 3 {
+			logp.Debug("beat", "Get empty jps result: %v", output)
 			continue
 		}
 
-		logp.Info("Starting Jstat Monitor for %v", pid_id)
-		jstatcmd := exec.Command("jstat", "-gc", "-t", pid_id, bt.config.Freq)
-		jstatstdout, err := jstatcmd.StdoutPipe()
-		if err != nil {
-			logp.Err("Error get stdout pipe: %v", err)
-			return err
-		}
-
-		jstatcmd.Start()
-		jstatscanner := bufio.NewScanner(jstatstdout)
-		var keys []string
-		var version string
-		for jstatscanner.Scan() {
-			line := jstatscanner.Text()
-			logp.Info("Line - %v", line)
-
-			values := blanks.Split(line, -1)
-
-			if len(values) > 2 && values[0] == "Timestamp" {
-				keys = values
-
-				if strings.Contains(line, "CCSC") {
-					version = "java8"
-				} else {
-					version = "java5"
-				}
-
+		lines := strings.Split(string(output), "\n")
+		names := make(map[string]string)
+		for _, line := range lines {
+			items := strings.Split(line, " ")
+			if len(items) != 2 {
 				continue
 			}
+			isInclude, exists := bt.names[items[1]]
+			if (!exists && bt.isExclude) || (exists && isInclude) {
+				names[items[0]] = items[1]
+			}
+		}
+		if len(names) == 0 {
+			logp.Debug("beat", "Didn't find named Java Process - Check again on next Tick")
+			continue
+		}
 
-			gcmetrics := common.MapStr{}
-
-			for i, key := range keys {
-				if len(key) == 0 {
+		events := []beat.Event{}
+		logp.Debug("beat", "Starting Jstat Monitor for %v", names)
+		for pid, name := range names {
+			jstatoutput, err := exec.Command("jstat", "-gc", "-t", pid, bt.config.Freq, "1").Output()
+			if err != nil {
+				logp.Err("Error while run jstat: %v, and try next pid", err)
+				continue
+			}
+			if len(jstatoutput) < 30 {
+				logp.Debug("beat", "Got empty jstat output, and try next pid")
+				continue
+			}
+			lines = strings.Split(string(jstatoutput), "\n")
+			var keys []string
+			var version string
+			for _, line := range lines {
+				logp.Debug("beat", "Line - %v", line)
+				if len(line) < 30 {
 					continue
 				}
-				gcmetrics[key], err = strconv.ParseFloat(values[i+1], 64)
-			}
 
-			jstatmap := common.MapStr{
-				"type": version,
-				"pid":  pid_id,
-				"name": bt.config.Name,
-				"gc":   gcmetrics,
-			}
+				values := blanks.Split(line, -1)
+				if len(values) > 2 && values[0] == "Timestamp" {
+					keys = values
 
-			event := common.MapStr{
-				"@timestamp": common.Time(time.Now()),
-				"jstat":      jstatmap,
-			}
+					if strings.Contains(line, "CCSC") {
+						version = "java8"
+					} else {
+						version = "java5"
+					}
 
-			bt.client.PublishEvent(event)
-			logp.Info("Event sent")
+					continue
+				}
+
+				gcmetrics := common.MapStr{}
+
+				for i, key := range keys {
+					if len(key) == 0 {
+						continue
+					}
+					gcmetrics[key], err = strconv.ParseFloat(values[i+1], 64)
+				}
+
+				jstatmap := common.MapStr{
+					"type": version,
+					"pid":  pid,
+					"name": name,
+					"gc":   gcmetrics,
+				}
+
+				ts := time.Now()
+				event := common.MapStr{
+					// "@timestamp": common.Time(ts),
+					"jstat": jstatmap,
+				}
+
+				// beatEvent := beat.Event{Timestamp: ts, Fields: event}
+				events = append(events, beat.Event{Timestamp: ts, Fields: event})
+				// bt.client.Publish(beatEvent)
+				// logp.Info("Event sent")
+			}
 		}
-		if err := scanner.Err(); err != nil {
-			logp.Err("Scanner Error %v", err)
-			return nil
+		if len(events) > 0 {
+			bt.client.PublishAll(events)
+			logp.Debug("beat", "Event sent: %v", len(events))
 		}
-
-		logp.Info("Finished Scanning stdout - Check for another Java Process on next Tick")
 	}
 
 	//	return nil

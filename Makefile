@@ -1,10 +1,10 @@
 BEAT_NAME=jstatbeat
-BEAT_PATH=github.com/sw/jstatbeat
+BEAT_PATH=github.com/guoxiaod/jstatbeat
 BEAT_GOPATH=$(firstword $(subst :, ,${GOPATH}))
 BEAT_URL=https://${BEAT_PATH}
 SYSTEM_TESTS=false
 TEST_ENVIRONMENT=false
-ES_BEATS?=./vendor/github.com/elastic/beats
+ES_BEATS?=${HOME}/go/src/github.com/elastic/beats
 GOPACKAGES=$(shell glide novendor)
 PREFIX?=.
 NOTICE_FILE=NOTICE
