@@ -1,0 +1,1352 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "Elasticsearch-jstatbeat",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "limit": 100,
+        "name": "Annotations & Alerts",
+        "showIn": 0,
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 286,
+  "iteration": 1603425187164,
+  "links": [],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch-jstatbeat",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 12,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "",
+          "bucketAggs": [
+            {
+              "fake": true,
+              "field": "jstat.pid.keyword",
+              "id": "6",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "field": "jstat.gc.FGC",
+              "hide": true,
+              "id": "3",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.YGC",
+              "hide": true,
+              "id": "4",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "4",
+              "id": "5",
+              "meta": {},
+              "pipelineAgg": "4",
+              "settings": {},
+              "type": "derivative"
+            }
+          ],
+          "query": "agent.hostname.keyword:$hostname AND jstat.pid.keyword:$pid",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Young GC Times",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch-jstatbeat",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 14,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "fake": true,
+              "field": "jstat.pid.keyword",
+              "id": "4",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "field": "3",
+              "id": "1",
+              "meta": {},
+              "pipelineAgg": "3",
+              "settings": {},
+              "type": "derivative"
+            },
+            {
+              "field": "jstat.gc.FGC",
+              "hide": true,
+              "id": "3",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            }
+          ],
+          "query": "agent.hostname.keyword:$hostname AND jstat.pid.keyword:$pid",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Full GC Times",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch-jstatbeat",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "fake": true,
+              "field": "jstat.pid.keyword",
+              "id": "4",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "field": "jstat.gc.EU",
+              "hide": true,
+              "id": "1",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.EC",
+              "hide": true,
+              "id": "3",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "select field",
+              "id": "5",
+              "meta": {},
+              "pipelineVariables": [
+                {
+                  "name": "var1",
+                  "pipelineAgg": "1"
+                },
+                {
+                  "name": "var2",
+                  "pipelineAgg": "3"
+                },
+                {
+                  "name": "var3",
+                  "pipelineAgg": "6"
+                },
+                {
+                  "name": "var4",
+                  "pipelineAgg": "7"
+                },
+                {
+                  "name": "var5",
+                  "pipelineAgg": "8"
+                },
+                {
+                  "name": "var6",
+                  "pipelineAgg": "9"
+                }
+              ],
+              "settings": {
+                "script": "(params.var1+params.var3+params.var4)/(params.var2 +params.var5+params.var6+ 0.1)"
+              },
+              "type": "bucket_script"
+            },
+            {
+              "field": "jstat.gc.S0U",
+              "hide": true,
+              "id": "6",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S1U",
+              "hide": true,
+              "id": "7",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S0C",
+              "hide": true,
+              "id": "8",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S1C",
+              "hide": true,
+              "id": "9",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            }
+          ],
+          "query": "agent.hostname.keyword:$hostname AND jstat.pid.keyword:$pid",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JVM Young Generation Usage(%)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch-jstatbeat",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 9,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "fake": true,
+              "field": "jstat.pid.keyword",
+              "id": "4",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "field": "jstat.gc.OU",
+              "hide": true,
+              "id": "1",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.OC",
+              "hide": true,
+              "id": "3",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "select field",
+              "id": "5",
+              "meta": {},
+              "pipelineVariables": [
+                {
+                  "name": "var1",
+                  "pipelineAgg": "1"
+                },
+                {
+                  "name": "var2",
+                  "pipelineAgg": "3"
+                }
+              ],
+              "settings": {
+                "script": "params.var1/(params.var2 + 0.1)"
+              },
+              "type": "bucket_script"
+            }
+          ],
+          "query": "agent.hostname.keyword:$hostname AND jstat.pid.keyword:$pid",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JVM Old Generation Usage(%)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch-jstatbeat",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "fake": true,
+              "field": "jstat.pid.keyword",
+              "id": "10",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "field": "select field",
+              "id": "3",
+              "meta": {},
+              "pipelineVariables": [
+                {
+                  "name": "var1",
+                  "pipelineAgg": "4"
+                },
+                {
+                  "name": "var2",
+                  "pipelineAgg": "5"
+                }
+              ],
+              "settings": {
+                "script": "params.var1 + params.var2"
+              },
+              "type": "bucket_script"
+            },
+            {
+              "field": "jstat.gc.EU",
+              "hide": true,
+              "id": "4",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.OU",
+              "hide": true,
+              "id": "5",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.CCSU",
+              "hide": true,
+              "id": "6",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.MU",
+              "hide": true,
+              "id": "7",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S0U",
+              "hide": true,
+              "id": "8",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S1U",
+              "hide": true,
+              "id": "9",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            }
+          ],
+          "query": "agent.hostname.keyword:$hostname AND jstat.pid.keyword:$pid",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JVM Total RAM Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "deckbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch-jstatbeat",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "id": 7,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "fake": true,
+              "field": "jstat.pid.keyword",
+              "id": "11",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "field": "select field",
+              "id": "4",
+              "meta": {},
+              "pipelineVariables": [
+                {
+                  "name": "v1",
+                  "pipelineAgg": "5"
+                },
+                {
+                  "name": "v2",
+                  "pipelineAgg": "6"
+                },
+                {
+                  "name": "v3",
+                  "pipelineAgg": "7"
+                },
+                {
+                  "name": "v4",
+                  "pipelineAgg": "8"
+                },
+                {
+                  "name": "v5",
+                  "pipelineAgg": "9"
+                },
+                {
+                  "name": "v6",
+                  "pipelineAgg": "10"
+                }
+              ],
+              "settings": {
+                "script": "params.v1 + params.v2 + params.v3+ params.v4+params.v5+params.v6"
+              },
+              "type": "bucket_script"
+            },
+            {
+              "field": "jstat.gc.S1C",
+              "hide": true,
+              "id": "5",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S0C",
+              "hide": true,
+              "id": "6",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.OC",
+              "hide": true,
+              "id": "7",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.MC",
+              "hide": true,
+              "id": "8",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.EC",
+              "hide": true,
+              "id": "9",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.CCSC",
+              "hide": true,
+              "id": "10",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            }
+          ],
+          "query": "agent.hostname.keyword:$hostname AND jstat.pid.keyword:$pid",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JVM Total RAM Capacity",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "deckbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Elasticsearch-jstatbeat",
+      "fill": 1,
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "fake": true,
+              "field": "jstat.pid.keyword",
+              "id": "11",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_term",
+                "size": "10"
+              },
+              "type": "terms"
+            },
+            {
+              "field": "@timestamp",
+              "id": "2",
+              "settings": {
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
+              },
+              "type": "date_histogram"
+            }
+          ],
+          "metrics": [
+            {
+              "field": "select field",
+              "id": "4",
+              "meta": {},
+              "pipelineVariables": [
+                {
+                  "name": "v1",
+                  "pipelineAgg": "5"
+                },
+                {
+                  "name": "v2",
+                  "pipelineAgg": "6"
+                },
+                {
+                  "name": "v3",
+                  "pipelineAgg": "7"
+                },
+                {
+                  "name": "v4",
+                  "pipelineAgg": "8"
+                },
+                {
+                  "name": "v5",
+                  "pipelineAgg": "9"
+                },
+                {
+                  "name": "v6",
+                  "pipelineAgg": "10"
+                },
+                {
+                  "name": "u1",
+                  "pipelineAgg": "12"
+                },
+                {
+                  "name": "u2",
+                  "pipelineAgg": "13"
+                },
+                {
+                  "name": "u3",
+                  "pipelineAgg": "14"
+                },
+                {
+                  "name": "u4",
+                  "pipelineAgg": "15"
+                },
+                {
+                  "name": "u5",
+                  "pipelineAgg": "16"
+                },
+                {
+                  "name": "u6",
+                  "pipelineAgg": "17"
+                }
+              ],
+              "settings": {
+                "script": "(params.u1+params.u2+params.u3+params.u4+params.u5+params.u6) / (0.1+params.v1 + params.v2 + params.v3+ params.v4+params.v5+params.v6)"
+              },
+              "type": "bucket_script"
+            },
+            {
+              "field": "jstat.gc.S1C",
+              "hide": true,
+              "id": "5",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S0C",
+              "hide": true,
+              "id": "6",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.OC",
+              "hide": true,
+              "id": "7",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.MC",
+              "hide": true,
+              "id": "8",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.EC",
+              "hide": true,
+              "id": "9",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.CCSC",
+              "hide": true,
+              "id": "10",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.CCSU",
+              "hide": true,
+              "id": "12",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.EU",
+              "hide": true,
+              "id": "13",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.MU",
+              "hide": true,
+              "id": "14",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.OU",
+              "hide": true,
+              "id": "15",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S0U",
+              "hide": true,
+              "id": "16",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            },
+            {
+              "field": "jstat.gc.S1U",
+              "hide": true,
+              "id": "17",
+              "meta": {},
+              "settings": {},
+              "type": "max"
+            }
+          ],
+          "query": "agent.hostname.keyword:$hostname AND jstat.pid.keyword:$pid",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JVM Total RAM Usage(%)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 18,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "tags": [],
+          "text": "spark2",
+          "value": "spark2"
+        },
+        "datasource": "Elasticsearch-jstatbeat",
+        "definition": "{\"find\":\"terms\",\"field\":\"agent.hostname.keyword\",\"size\":100}",
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": false,
+        "name": "hostname",
+        "options": [],
+        "query": "{\"find\":\"terms\",\"field\":\"agent.hostname.keyword\",\"size\":100}",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "jstat.gc.pid.keyword",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "Elasticsearch-jstatbeat",
+        "definition": "{\"find\":\"terms\",\"field\":\"jstat.pid.keyword\",\"size\":100,\"query\":\"agent.hostname.keyword:$hostname\"}",
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": false,
+        "name": "pid",
+        "options": [],
+        "query": "{\"find\":\"terms\",\"field\":\"jstat.pid.keyword\",\"size\":100,\"query\":\"agent.hostname.keyword:$hostname\"}",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "Spark JVM Stats",
+  "uid": "jPrPdFtGk6",
+  "version": 23
+}
