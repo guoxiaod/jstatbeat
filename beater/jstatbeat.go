@@ -14,9 +14,15 @@ import (
 	// "github.com/elastic/beats/libbeat/publisher"
 
 	"github.com/guoxiaod/jstatbeat/config"
+	"github.com/guoxiaod/jstatbeat/proc"
 )
 
 var blanks = regexp.MustCompile(`\s+`)
+var cpuCores = proc.NumCores()
+var prevCpuTick = int64(0)
+var curCpuTick = int64(0)
+var lastCpuStats = make(map[string]proc.Cpustat)
+var curCpuStats = make(map[string]proc.Cpustat)
 
 type Jstatbeat struct {
 	done      chan struct{}
@@ -24,6 +30,14 @@ type Jstatbeat struct {
 	client    beat.Client
 	names     map[string]bool
 	isExclude bool
+}
+
+type JpsResult struct {
+	pid   string
+	name  string
+	alias string
+	mx    string
+	ms    string
 }
 
 // Creates beater
@@ -89,7 +103,7 @@ func (bt *Jstatbeat) Run(b *beat.Beat) error {
 
 		logp.Debug("beat", "Tick - Scanning for Named Java Process")
 
-		output, err := exec.Command("jps").Output()
+		output, err := exec.Command("jps", "-v").Output()
 		if err != nil {
 			logp.Err("Error get while run jps: %v", err)
 			continue
@@ -100,15 +114,33 @@ func (bt *Jstatbeat) Run(b *beat.Beat) error {
 		}
 
 		lines := strings.Split(string(output), "\n")
-		names := make(map[string]string)
+		names := make(map[string]JpsResult)
 		for _, line := range lines {
 			items := strings.Split(line, " ")
-			if len(items) != 2 {
+			if len(items) < 2 {
 				continue
 			}
 			isInclude, exists := bt.names[items[1]]
+			var alias string = ""
+			var mx string = ""
+			var ms string = ""
+			for _, item := range items {
+				if strings.HasPrefix(item, "-Xms") {
+					ms = item[4:]
+				} else if strings.HasPrefix(item, "-Xmx") {
+					mx = item[4:]
+				} else if strings.HasPrefix(item, "-DALIAS=") {
+					alias = item[8:]
+				}
+			}
 			if (!exists && bt.isExclude) || (exists && isInclude) {
-				names[items[0]] = items[1]
+				names[items[0]] = JpsResult{
+					pid:   items[0],
+					name:  items[1],
+					ms:    ms,
+					mx:    mx,
+					alias: alias,
+				}
 			}
 		}
 		if len(names) == 0 {
@@ -116,9 +148,17 @@ func (bt *Jstatbeat) Run(b *beat.Beat) error {
 			continue
 		}
 
+		curCpuTick = proc.CpuTick()
+		curCpuStats = make(map[string]proc.Cpustat)
+		factor := 1. / (float32(curCpuTick-prevCpuTick) / float32(cpuCores) / 100.)
+		for pid, _ := range names {
+			pid_, _ := strconv.Atoi(pid)
+			curCpuStats[pid] = proc.TimeFromPid(pid_)
+		}
+
 		events := []beat.Event{}
 		logp.Debug("beat", "Starting Jstat Monitor for %v", names)
-		for pid, name := range names {
+		for pid, jpsResult := range names {
 			jstatoutput, err := exec.Command("jstat", "-gc", "-t", pid, bt.config.Freq, "1").Output()
 			if err != nil {
 				logp.Err("Error while run jstat: %v, and try next pid", err)
@@ -159,13 +199,29 @@ func (bt *Jstatbeat) Run(b *beat.Beat) error {
 					gcmetrics[key], err = strconv.ParseFloat(values[i+1], 64)
 				}
 
-				jstatmap := common.MapStr{
-					"type": version,
-					"pid":  pid,
-					"name": name,
-					"gc":   gcmetrics,
-				}
+				cpu := common.MapStr{}
 
+				lastCpuStat, exists := lastCpuStats[pid]
+				curCpuStat, x_exists := curCpuStats[pid]
+				if exists {
+					utime := factor * float32(curCpuStat.Utime-lastCpuStat.Utime)
+					stime := factor * float32(curCpuStat.Stime-lastCpuStat.Stime)
+					cpu["iotime"] = factor * float32(curCpuStat.Iotime-lastCpuStat.Iotime)
+					cpu["util"] = utime + stime
+					cpu["utime"] = utime
+					cpu["stime"] = stime
+					cpu["cores"] = cpuCores
+				}
+				jstatmap := common.MapStr{
+					"type":  version,
+					"pid":   pid,
+					"name":  jpsResult.name,
+					"alias": jpsResult.alias,
+					"mx":    jpsResult.mx,
+					"ms":    jpsResult.ms,
+					"gc":    gcmetrics,
+					"cpu":   cpu,
+				}
 				ts := time.Now()
 				event := common.MapStr{
 					// "@timestamp": common.Time(ts),
@@ -182,6 +238,9 @@ func (bt *Jstatbeat) Run(b *beat.Beat) error {
 			bt.client.PublishAll(events)
 			logp.Debug("beat", "Event sent: %v", len(events))
 		}
+		prevCpuTick = curCpuTick
+		lastCpuStats = curCpuStats
+		curCpuStats = nil
 	}
 
 	//	return nil
