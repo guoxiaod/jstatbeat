@@ -202,8 +202,8 @@ func (bt *Jstatbeat) Run(b *beat.Beat) error {
 				cpu := common.MapStr{}
 
 				lastCpuStat, exists := lastCpuStats[pid]
-				curCpuStat, x_exists := curCpuStats[pid]
 				if exists {
+					curCpuStat, _ := curCpuStats[pid]
 					utime := factor * float32(curCpuStat.Utime-lastCpuStat.Utime)
 					stime := factor * float32(curCpuStat.Stime-lastCpuStat.Stime)
 					cpu["iotime"] = factor * float32(curCpuStat.Iotime-lastCpuStat.Iotime)
